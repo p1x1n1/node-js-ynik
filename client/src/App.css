@@ -1,0 +1,12 @@
+#column {
+    padding: 20px;
+    display: flex;
+     flex-wrap: nowrap;
+}
+img{
+    text-align: center;
+    width: 50%;
+    display: flex; justify-content: space-between;
+    margin: auto;
+    padding: auto;
+}
