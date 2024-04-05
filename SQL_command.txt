@@ -1,0 +1,22 @@
+CREATE TABLE flowers(
+id_type serial primary key,
+name_type varchar(20) unique NOT NULL,
+img  varchar(20)
+);
+CREATE TABLE wrappers(
+id_type serial primary key,
+name_type varchar(20) unique NOT NULL,
+img  varchar(20)
+);
+CREATE TABLE boquets(
+arc serial primary key,
+name_ varchar(20) unique NOT NULL,
+wrapper_ integer references wrappers(id_type),
+img  varchar(20)
+);
+CREATE TABLE boquets_composition(
+arc_boquets integer references boquets(arc),
+id_type_flowers integer references flowers(id_type),
+PRIMARY KEY (arc_boquets,id_type_flowers) ,
+count_ integer not null
+);

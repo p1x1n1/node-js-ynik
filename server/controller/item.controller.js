@@ -17,12 +17,12 @@ class ItemController {
 	}
 	async getOneItem(req, res) {
 		const id = req.params.id
-		const item = await db.query(`SELECT * FROM item WHERE id = ${id}`)
+		const item = await db.query('SELECT * FROM item WHERE id = ($1)',[id])
 		res.json(item.rows[0])
 	}
 	async deleteItem(req, res) {
 		const id = req.params.id
-		const item = await db.query(`DELETE FROM item WHERE id = ${id}`)
+		const item = await db.query('DELETE FROM item WHERE  id = ($1)',[id])
 		res.json({ success: true })
 	}
 }

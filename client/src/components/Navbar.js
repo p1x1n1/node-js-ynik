@@ -30,6 +30,11 @@ function NavBar() {
 					            Простой CRUD
 				            </Link>
                     </li>
+                    <li>
+                    <Link className='nav-link' to={'/boquet-example'}>
+					            Букеты
+				            </Link>
+                    </li>
                 </ul>
 
               <button class="navbar-toggler" type="button" 

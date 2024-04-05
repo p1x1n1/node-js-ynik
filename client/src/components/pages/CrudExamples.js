@@ -56,7 +56,7 @@ function CrudExample() {
 	}
 
 	function fetchData() {
-		apiService.get('/items').then(res => {
+		apiService.get('/item').then(res => {
 			setItems(res)
 		})
 	}
