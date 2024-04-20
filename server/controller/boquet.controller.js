@@ -15,6 +15,10 @@ class BoquetController {
 		const boquet = await db.query('SELECT * FROM boquets ORDER BY arc')
 		res.json(boquet.rows)
 	}
+	async getBoquetsInfo(req, res) {
+		const boquet = await db.query('select arc, name_, wrapper_,wrappers.name_type as wrapper_name,boquets.img from boquets inner join wrappers on boquets.wrapper_=wrappers.id_type order by arc')
+		res.json(boquet.rows)
+	}
 	async getOneBoquet(req, res) {
 		const arc = req.params.arc
 		const boquet = await db.query('SELECT * FROM boquets WHERE arc = ($1)',[arc])

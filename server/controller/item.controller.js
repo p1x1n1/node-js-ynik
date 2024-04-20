@@ -1,7 +1,9 @@
 const db = require('../db')
-
+const { checkUserRole } = require('../utils/check-user-role')
 class ItemController {
 	async createItem(req, res) {
+		const userRole = await checkUserRole(req)
+		if (userRole === 'admin') {
 		const { id, name, description } = req.body
 		let item
 		if (id) {
@@ -10,6 +12,10 @@ class ItemController {
 			item = await db.query('INSERT INTO item (name, description) values ($1, $2) RETURNING *', [name, description])
 		}
 		res.json(item.rows[0])
+		}
+		else {
+			res.send(403, 'You do not have rights to create/update items!')
+		}
 	}
 	async getItems(req, res) {
 		const items = await db.query('SELECT * FROM item ORDER BY id')
@@ -21,9 +27,14 @@ class ItemController {
 		res.json(item.rows[0])
 	}
 	async deleteItem(req, res) {
-		const id = req.params.id
-		const item = await db.query('DELETE FROM item WHERE  id = ($1)',[id])
-		res.json({ success: true })
+		const userRole = await checkUserRole(req)
+		if (userRole === 'admin') {
+			const id = req.params.id
+			const item = await db.query('DELETE FROM item WHERE  id = ($1)',[id])
+			res.json({ success: true })}
+		else {
+			res.send(403, 'You do not have rights to create/update items!')
+		}
 	}
 }
 

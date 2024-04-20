@@ -4,20 +4,22 @@ class BoquetCompositionController {
 	async createBoquetComposition(req, res) {
 		const { arc_boquets, id_type_flowers,count_ } = req.body
 		let boquet
-		if (arc_boquets && id_type_flowers) {
-			boquet = await db.query('UPDATE boquets_composition set count_ = ($1) where arc_boquets = ($2) and id_type_flowers = ($3)  RETURNING *', [count_, arc_boquets ,id_type_flowers])
-		} else {
-			boquet = await db.query('INSERT INTO boquets_composition (arc_boquets,id_type_flowers,count_) values ($1, $2,$3) RETURNING *', [ arc_boquets ,id_type_flowers,count_])
-		}
+		boquet = await db.query('INSERT INTO boquets_composition (arc_boquets,id_type_flowers,count_) values ($1, $2,$3) RETURNING *', [ arc_boquets ,id_type_flowers,count_])
+		res.json(boquet.rows[0])
+	}
+	async updateBoquetComposition(req, res) {
+		const { arc_boquets, id_type_flowers,count_ } = req.body
+		let boquet
+		boquet = await db.query('UPDATE boquets_composition set count_ = ($1) where arc_boquets = ($2) and id_type_flowers = ($3)  RETURNING *', [count_, arc_boquets ,id_type_flowers])
 		res.json(boquet.rows[0])
 	}
 	async getBoquetCompositions(req, res) {
-		const boquet = await db.query('SELECT * FROM boquets_composition ORDER BY arc_boquets,id_type_flowers ')
+		const boquet = await db.query('SELECT arc_boquets,id_type_flowers, flowers.name_type as flower_name FROM boquets_composition INNER JOIN flowers on flowers.id_type=boquets_composition.id_type_flowers ORDER BY arc_boquets,id_type_flowers ')
 		res.json(boquet.rows)
 	}
 	async getOneBoquetComposition(req, res) {
 		const arc_boquets = req.params.arc_boquets
-		const boquet = await db.query('SELECT * FROM boquets_composition WHERE arc_boquets = ($1)',[arc_boquets])
+		const boquet = await db.query('SELECT arc_boquets,id_type_flowers, flowers.name_type as flower_name FROM boquets_composition INNER JOIN flowers on flowers.id_type=boquets_composition.id_type_flowers WHERE arc_boquets = ($1)',[arc_boquets])
 		res.json(boquet.rows)
 	}
 	async getOneBoquetFlowerComposition(req, res) {

@@ -2,7 +2,11 @@ export class ApiService {
 	#apiPath = 'http://localhost:3001/api'//приватное поле #
 
 	#makeRequest(url, options) {
-		return fetch(this.#apiPath + url, options).then(res => res.json())//fetch js отправка запроса
+		return fetch(this.#apiPath + url, {
+			...options,
+			credentials: 'include'
+		}
+		).then(res => res.json())//fetch js отправка запроса
 	}
 
 	get(url) {

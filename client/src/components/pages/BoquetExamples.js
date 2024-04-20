@@ -15,12 +15,33 @@ const boquet_columns = [
 		dataIndex: 'name_',
 		key: 'name_'
 	},
-	/*
 	{
 		title: 'Состав',
-        dataIndex: 'boquet_composition',
-        key: 'boquet_composition'
-	},*/
+		dataIndex: 'boquet_composition',
+		key: 'boquet_composition',
+		render: (boquet_composition, record) => (
+		  <Table
+			dataSource={boquet_composition}
+			columns={[
+			  {
+				title: 'Название цветка',
+				dataIndex: 'flowers_name',
+				key: 'flowers_name'
+			  },
+			  {
+				title: 'Количество',
+				dataIndex: 'count_',
+				key: 'count_'
+			  }
+			]}
+			/*onRow={rec => {//поведение для строчки
+				return {
+					onClick: () => showBoquetItem(rec.arc_boquets,rec.id_type_flowers)
+				}
+			}}*/
+		  />
+		)
+	  },
 	{
 		title: 'Упаковка',
 		dataIndex: 'wrapper_name',
@@ -38,12 +59,13 @@ function BoquetExample() {
 	const [boquets, setBoquets] = useState([])
 	const [wrapper,setWrapper] = useState([])
 	const [flower,setFlower] = useState([])
-	//const [boquets_composition, setBoquetsComposition] = useState([])
+	//const [boquets_compositions, setBoquetsCompositions] = useState([])
 	const [arc_composition,setComposition] = useState([]);
 
 	function fetchDataWrapper() {
 		apiService.get('/wrapper').then(res => {
-			setWrapper(res)
+			setWrapper(res);
+			//fetchData();
 		})
 		console.log('wrapper',wrapper)
 	}
@@ -53,12 +75,6 @@ function BoquetExample() {
 		})
 		console.log('flower',flower)
 	}
-	/*function fetchDataBoquetComposition() {
-		apiService.get('/boquetcomposition').then(res => {
-			setBoquetsComposition(res)
-		})
-		console.log('boquets_composition',boquets_composition)
-	}*/
 	function find(mass,id){
 		for (let i = 0; i < mass.length; i++) {
             if (mass[i].id_type === id) {
@@ -66,25 +82,24 @@ function BoquetExample() {
             }
         }
 	}
-	function findId(mass,name){
-		for (let i = 0; i < mass.length; i++) {
-            if (mass[i].name_type === name) {
-                return i;
-            }
-        }
-	}
-	
 	function fetchData() {
-		apiService.get('/boquet').then(res => {
+		apiService.get('/flower').then(res => {
+			setFlower(res)
+		})
+		console.log('flower',flower)
+	apiService.get('/wrapper').then(res1 => {
+		setWrapper(res1);
+		console.log('wrapper',wrapper)
+	}).then(res1=>
+	{apiService.get('/boquet').then(res => {
 			// Добавляем информацию о обертках к букетам
 			const updatedBoquets = res.map(boquet => {
-				const wrapperId = boquet.wrapper_;
-				console.log(wrapperId);
-				const wrapperName = wrapper[find(wrapper,wrapperId)].name_type || 'Unknown Wrapper'; // Защита от случая, если wrapper еще не загружен
 				apiService.get('/boquetcomposition/'+boquet.arc).then(res => {
 					setComposition(res)
 				})
-				console.log(arc_composition)
+				const wrapperId = boquet.wrapper_;
+				const wrapperName = wrapper[find(wrapper,wrapperId)].name_type || 'Unknown Wrapper'; // Защита от случая, если wrapper еще не загружен
+				console.log('arc_composition',arc_composition)
 				const boquetComposition = arc_composition.map(composition =>{
 					const flowers = flower[find(flower,composition.id_type_flowers)];
 					return{
@@ -95,7 +110,7 @@ function BoquetExample() {
 					}
 				)
 				 || 'Unknown Composition';
-				console.log(boquetComposition);
+				console.log('boquetComposition',boquetComposition);
 				return {
 					...boquet,
 					wrapper_name: wrapperName,
@@ -105,22 +120,35 @@ function BoquetExample() {
 			setBoquets(updatedBoquets);
 			console.log(updatedBoquets);
 		});
-		console.log('boquets',boquets);
+		console.log('boquets',boquets);}
+	)
 	}
-
 	useEffect(() => {
-		fetchDataWrapper();
-		fetchDataFlower();
-		//fetchDataBoquetComposition();
-		fetchData()
+		//const timer = setTimeout(() => {
+		//if(wrapper.length > 0 && flower.length > 0)
+		fetchData();
+		//console.log('boquets',boquets);
+		//}, 5000);
+		
 	}, [])
 	const [modalVisible, setModalVisible] = useState(false)
 	const [boquetRecord, setBoquetRecord] = useState({})
+	const [boquetCompositionRecord, setBoquetCompositionRecord] = useState({})
 	function showItem(recId) {
 		recId
 			? apiService.get('/boquet/' + recId).then(res => {//promise - then catch
 					setBoquetRecord(res)
+					apiService.get('/boquetcomposition/' + recId).then(res => {
+						setComposition(res)
+					});
 					setModalVisible(true)
+			  })
+			: setModalVisible(true)
+	}
+	function showBoquetItem(recId,recIdFlower) {
+		recId
+			? apiService.get('/boquetcomposition/' + recId+'/'+recIdFlower).then(res => {//promise - then catch
+					setBoquetCompositionRecord(res)
 			  })
 			: setModalVisible(true)
 	}
@@ -130,8 +158,8 @@ function BoquetExample() {
 			close()
 			fetchData()
 		})
+		
 	}
-
 	function removeItem(recId) {
 		apiService.delete('/boquet/' + recId).then(() => {
 			close()
@@ -148,7 +176,6 @@ function BoquetExample() {
 			<Button type='primary' onClick={() => showItem()}>
 				Добавить
 			</Button>
-			
 			<Table
 				pagination={{ position: ['topRight'] }}
 				dataSource={boquets}
@@ -176,9 +203,11 @@ function BoquetExample() {
 						</Button>
 					) : null,
 					<Button onClick={() => close()}>Отмена</Button>
-				]}
+				]
+			}
 			>
-				{console.log(boquetRecord)}
+				{console.log('boquetRec',boquetRecord)}
+				{console.log('boquetComposition',boquetCompositionRecord)}
 				<Form labelAlign='left' labelCol={{ span: 4 }} wrapperCol={{ span: 18 }}>
 					<Form.Item label='Название'>
 						<Input
@@ -205,6 +234,35 @@ function BoquetExample() {
                             ))}
                         </Select>
 					</Form.Item>
+					{boquetRecord.arc ?  
+					<Form.Item label='Состав'>
+						{arc_composition.map(composition=>(
+							<>
+								<Select 
+								    onChange={v =>{
+										composition.id_type_flowers = v;
+										setBoquetCompositionRecord(composition)
+	                                   /* setComposition(prevState => {
+											{console.log(v)};
+	                                        return { ...prevState, id_type_flowers: v}
+	                                    })*/
+										console.log('arc_composition',arc_composition)
+										//console.log('arc_composition',arc_composition)
+									}
+	                                }
+									value={composition.id_type_flowers}>
+									{flower.map(fw => (
+										<Select.Option key={fw.id_type} value={fw.id_type}>
+											{fw.name_type}
+										</Select.Option>
+									))}
+
+								</Select>
+							</>
+						))}
+					</Form.Item>
+					:<></>
+					}
 				</Form>
 			</Modal>
 		</>
@@ -212,6 +270,7 @@ function BoquetExample() {
 }
 export default BoquetExample;
 /**
+ * //{console.log('boquetRecord',boquetRecord)}
  * 						onChange={v =>
 							setBoquetRecord(prevState => {
 								return { ...prevState, wrapper_: v}//значение из key

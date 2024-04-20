@@ -1,7 +1,17 @@
 import React from 'react';
 import logo from "../base_img/logo.jpg";
 import {Link} from "react-router-dom";
-function NavBar() {
+import { AuthService } from '../services/auth.service';
+import { Button } from 'antd';
+import { LogoutOutlined } from '@ant-design/icons';
+const authService = new AuthService()
+function NavBar(props) {
+  function logout() {
+		authService.logout().then(() => {
+			document.location.reload()
+		})
+	}
+
     return(
       <>
       <nav class="navbar bg-primary navbar-dark text-light fixed-top sticky-top" >
@@ -34,6 +44,21 @@ function NavBar() {
                     <Link className='nav-link' to={'/boquet-example'}>
 					            Букеты
 				            </Link>
+                    </li>
+                    <li>
+                    <Link className='nav-link' to={'/flower-wrapper'}>
+					            цветы и упаковки
+				            </Link>
+                    </li>
+                    <li>
+                      <span style={{ fontSize: '14px', marginRight: 15 }}>
+                        Привет, {props.currentUserInfo.login}!
+                        {props.currentUserInfo.role === 'admin' ? 'Ты можешь все!💪😎' : 'Смотри и радуйся🌚'}
+                      </span>
+                        <Button size='small' onClick={logout} type='text'>
+                          Выйти
+                        </Button>
+                        
                     </li>
                 </ul>
 

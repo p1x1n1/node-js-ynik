@@ -20,3 +20,11 @@ id_type_flowers integer references flowers(id_type),
 PRIMARY KEY (arc_boquets,id_type_flowers) ,
 count_ integer not null
 );
+CREATE TABLE users(
+id serial primary key,
+login varchar(255) unique NOT NULL,
+password  varchar(255) NOT NULL,
+role integer default  1
+);
+
+SELECT  setval('flowers_id_type_seq',5)

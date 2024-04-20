@@ -7,7 +7,7 @@ class FlowerController {
 		if (id_type) {
 			flower = await db.query('UPDATE flowers set name_type = ($1), img = ($2) where id_type = ($3) RETURNING *', [name_type, img,id_type])
 		} else {
-			flower = await db.query('INSERT INTO flowers (name_type, img) values ($1, $2) RETURNING *', [name_type, img])
+			flower = await db.query('INSERT INTO flowers(name_type, img) values ($1, $2) RETURNING *', [name_type, img])
 		}
 		res.json(flower.rows[0])
 	}
