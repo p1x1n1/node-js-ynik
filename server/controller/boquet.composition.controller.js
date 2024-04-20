@@ -17,11 +17,21 @@ class BoquetCompositionController {
 	}
 	async getOneBoquetComposition(req, res) {
 		const arc_boquets = req.params.arc_boquets
+		const boquet = await db.query('SELECT * FROM boquets_composition WHERE arc_boquets = ($1)',[arc_boquets])
+		res.json(boquet.rows)
+	}
+	async getOneBoquetFlowerComposition(req, res) {
+		const arc_boquets = req.params.arc_boquets
 		const id_type_flowers = req.params.id_type_flowers
 		const boquet = await db.query('SELECT * FROM boquets_composition WHERE arc_boquets = ($1) and id_type_flowers = ($2)',[arc_boquets,id_type_flowers])
 		res.json(boquet.rows[0])
 	}
 	async deleteBoquetComposition(req, res) {
+		const arc_boquets = req.params.arc_boquets
+		const boquet = await db.query('DELETE FROM boquets_composition WHERE arc_boquets = ($1)',[arc_boquets])
+		res.json({ success: true })
+	}
+	async deleteBoquetFlowerComposition(req, res) {
 		const arc_boquets = req.params.arc_boquets
 		const id_type_flowers = req.params.id_type_flowers
 		const boquet = await db.query('DELETE FROM boquets_composition WHERE arc_boquets = ($1) and id_type_flowers = ($2)',[arc_boquets,id_type_flowers])

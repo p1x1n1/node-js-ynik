@@ -4,7 +4,9 @@ const boquetCompositionController = require('../controller/boquet.composition.co
 
 router.post('/', boquetCompositionController.createBoquetComposition)
 router.get('/', boquetCompositionController.getBoquetCompositions)
-router.get('/:id', boquetCompositionController.getOneBoquetComposition)
-router.delete('/:id', boquetCompositionController.deleteBoquetComposition)
+router.get('/:arc_boquets', boquetCompositionController.getOneBoquetComposition)
+router.get('/:arc_boquets/:id_type_flowers', boquetCompositionController.getOneBoquetComposition)
+router.delete('/:arc_boquets', boquetCompositionController.deleteBoquetComposition)
+router.delete('/:arc_boquets/:id_type_flowers', boquetCompositionController.deleteBoquetFlowerComposition)
 
 module.exports = router
